@@ -1,0 +1,8 @@
+Ctrl+O 'open REPL
+Ctrl+D(exit()) 'exit the interactive session
+; 'Semicolon after the value, it will be not shown
+ans 'last evaluated expression(Only in interactive sessions)
+include("file.jl") 'To evaluate expressions written in a source file "file.jl"
+julia script.jl arg1 arg2 ... 'To run code in a file non-interactively
+julia --color=yes -0 -- foo.jl arg1 arg2 'delimiter -- to separate command-line arguments
+/.julia/config/startup.jl 'startup.jl will be run whenever Julia is run
