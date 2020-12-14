@@ -1,0 +1,3 @@
+Setting Ctrl+,
+Open Julia Ctrl+O
+Exit Julia Ctrl+D

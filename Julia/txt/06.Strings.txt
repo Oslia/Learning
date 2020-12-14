@@ -1,0 +1,137 @@
+String type은 UTF-8 유니코드 문자를 지원
+
+transcode 다른 유니코드 인코딩으로 변환 가능
+
+String
+AbstractChar
+Char
+
+'x' ->'x': ASCII/Unicode U+0078 (category Ll: Letter, lowercase)
+typeof(x) -> Char
+Int('x') -> 120
+typeof(ans) -> Int64
+Char(120) ->'x'
+Char(0x110000) ->'\U110000': Unicode U+110000 (category In: Invalid, too high)
+어떤 정수값이 유효한 유니코드 포인트인지 확인하려면
+isvalid(Char, 0x110000) -> false
+
+
+\u 뒤에는 최대 4개의 16진수
+\U 뒤에는 최대 8개의 16진수 입력 가능
+'\u0' ->'\0': ASCII/Unicode U+0000 (category Cc: Other, control)
+'\u78' -> 'x': ASCII/Unicode U+0078 (category Ll: Letter, lowercase)
+'\u2200' ->'∀': Unicode U+2200 (category Sm: Symbol, math)
+'\U10ffff' ->'\U10ffff': Unicode U+10FFFF (category Cn: Other, not assigned)
+
+Int('\0') -> 0
+Int('\t') -> 9
+Int('\n') -> 10
+Int('\x7f') -> 127
+Int('\177') -> 127
+
+'A' < 'a'
+'B' + 1 -> 'C'
+
+Strings
+str = "Hello world.\n" -> "Hello, world.\n"
+"""Contains "quote" characters""" ->"Contains \"quote\" characters"
+
+str[begin] -> 'H'
+str[1] -> 'H'
+str[6] -> ' '
+str[end] ->'\n'
+firstindex(str) -> 1
+lastindex(str)
+str[end-1]
+
+str[begine-1] -> error
+str[end+1] -> error
+
+str[4:9] -> "lo wo"
+str[6] -> ',': ASCII/Unicode U+002C (category Po: Punctuation, other)
+str[6:6] -> "," 위에껀 Char, 이거는 String
+
+str="long string"
+substr = SubString(str, 1, 4) -> "long"
+typeof(substr) -> SubString{String}
+str[1:4] -> typeof는 String
+
+ s = "\u2200 x \u2203 y" -> "∀ x ∃ y"
+ s[1] -> '∀'
+ s[2] -> error
+ s[3] -> error
+ s[4] -> ' '
+ 문자열이 항상 index로 인덱싱할 수 있는건 아님.
+ 유니코드는 3바이트 문자이므로 2, 3은 무효함
+ nextind(s,1)로 다음 유효한 인덱스 참조 가능
+ 마찬가지로 prevind(s, end, 2). prevind(str, a, b) a에서 b번째 앞
+end는 항상 유효한 인덱스
+lastindex(s)
+
+ length(s)가 항상 마지막 인덱스와 같지 않다.
+
+ for i = firstindex(s):lastindex(s)
+  try println(s[i])
+  catch
+    #ignore the index error
+  end
+end
+
+좀 더 간결한 문법. 문자열 자체를 반복 가능한 객체로 사용가능
+for c in s
+  println(c)
+end
+
+collect(eachindex(s)) -> 유효한 index를 반환한다. eachindex(s)는 유효한 index
+
+codeunit(s,i) -> 인코딩의 원시 코드 단위에 엑세스 하려면.
+          i: 1부터 ncodeunits(s)까지
+codeunits(s) -> AbstractVector{UInt8}을 반환
+ s = "\xc0\xa0\xe2\x88\xe2|"
+ foreach(display, s)
+ isvalid.(collect(s))
+ s2 = "\xf7\xbf\xbf\xbf"
+ foreach(display, s2)
+
+
+greet = "Hello"
+whom = "world"
+string(great, ", ", whom, "\n") ->"Hello, world"
+a, b = "\xe2\x88", "\x80" -> 유효하지 않음
+c = a*b -> "∀"
+collect.([a, b, c])
+length.([a, b, c])
+
+greet * ", " * whom * ".\n"
+*로 연결도 가능
+
+Interpolation
+"$greet, $whom.\n" -> 시스템이 다음으로 재해석 string(greet, ", ", whom, ".\n")
+"1 + 2 = $(1 + 2)" ->괄호 안에 식도 사용 가능
+
+v=[1, 2, 3]
+"v: $v" ->"v: [1, 2, 3]"
+c = 'x'
+"hi, $c" -> "hi, x"
+print("I have \$100 in my account.\n")
+
+Triple-Quoted String Literals
+들여쓰기가 가능
+str = """
+           Hello,
+           world.
+         """
+  ->"  Hello,\n  world.\n"
+들여쓰기 수준은 마지막 빈 줄 """이 결정
+
+"""    This
+         is
+           a test"""
+"    This\nis\n  a test"
+
+"""hello"""
+"""
+hell""" -> 위 이거 동일한 결과
+"""
+
+hello""" -> 개행이 포함됨
